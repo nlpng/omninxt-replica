@@ -1,2 +1,5 @@
 # kalibr data
 /kalibr-tools/data/
+
+# python
+**/__pycache__/**
