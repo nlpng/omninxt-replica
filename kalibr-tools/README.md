@@ -104,6 +104,10 @@ cd /to/kalibr-tools/path
 In step 2, before calibration, extract the rosbag into separated `.bag` file for each camera and camera pair, this will generate a `extracted_output` folder under `data` to store all the calibration files
 
 ```shell
+# [Optional] Make sure the file is executable
+chmod +x ./scripts/extract.sh
+
+# Run the script
 ./scripts/extract.sh
 ```
 
@@ -126,6 +130,10 @@ extracted_output/
 For steps 3 to 7, execute the following command
 
 ```shell
+# [Optional] Make sure the file is executable
+chmod +x ./scripts/calibrate.sh
+
+# Run the script
 ./scripts/calibrate.sh
 ```
 
