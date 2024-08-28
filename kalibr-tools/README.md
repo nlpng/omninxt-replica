@@ -43,6 +43,8 @@ cd omninxt-replica/kalibr-tools
 
 Build the docker container for the calibration tools, they are based on ROS (noetic and melodic) containers. This might take a while to complete. When it is done, you should see the built container using the `docker images` command.
 
+**NOTE** At the moment of writing, the ROS Noetic docker container is not fully tested due to the [know issue](#know_issue).
+
 - ROS Noetic
 
 ```shell
@@ -130,6 +132,7 @@ For steps 3 to 7, execute the following command
 Finally if everything went well, all the calibrated parameters and information are saved in the `extracted_output` folder under the  `data` directory.
 
 
+<a id="know_issues"></a>
 ## Known issues
 Lists of errors occured during the Calibration processes
 

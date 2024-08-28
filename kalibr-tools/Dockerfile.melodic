@@ -63,12 +63,11 @@ RUN source /opt/ros/melodic/setup.bash \
 
 
 WORKDIR /app
-COPY ./utils /app/utils
 COPY ./configs /app/configs
-COPY extract.py /app/extract.py
-COPY calibrate.py /app/calibrate.py
-COPY generate.py /app/generate.py
-COPY configurator.py /app/configurator.py
+COPY ./kalibr-tools/utils /app/utils
+COPY ./kalibr-tools/extract.py /app/extract.py
+COPY ./kalibr-tools/calibrate.py /app/calibrate.py
+COPY ./kalibr-tools/generate.py /app/generate.py
 
 RUN mkdir -p /app/scripts \
     && python generate.py
