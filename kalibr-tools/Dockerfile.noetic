@@ -1,0 +1,64 @@
+FROM osrf/ros:noetic-desktop
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV WS=/root/catkin_ws
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        git \
+        wget \
+        autoconf \
+        automake \
+        doxygen \
+        libpoco-dev \
+        libtbb-dev \
+        libblas-dev \
+        liblapack-dev \
+        libglew-dev \
+        libv4l-dev \
+        libeigen3-dev \
+        libopencv-dev \
+        libboost-all-dev \
+        libsuitesparse-dev \
+        python3 \
+        python3-pip \
+        python3-dev \
+        python3-scipy \
+        python3-matplotlib \
+        python3-catkin-tools \
+        python3-osrf-pycommon \
+        python3-wxgtk4.0 \
+        python3-tk \
+        python3-igraph \ 
+        ros-noetic-cv-bridge \
+    && pip3 install notebook opencv-python opencv-contrib-python tqdm apriltag dill \
+    && mkdir -p ${WS}/src && cd ${WS} \
+    && git clone https://github.com/castacks/tartancalib.git ${WS}/src/tartancalib \
+    && mkdir -p /app \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+WORKDIR ${WS}
+
+SHELL ["/bin/bash", "-c"]
+RUN source /opt/ros/noetic/setup.bash \
+    && catkin build -DCMAKE_BUILD_TYPE=Release -j$(nproc)
+
+WORKDIR /app
+COPY ./utils /app/utils
+COPY ./notebooks /app/notebooks
+COPY ./configs /app/configs
+COPY extract.py /app/extract.py
+COPY calibrate.py /app/calibrate.py
+COPY generate.py /app/generate.py
+COPY configurator.py /app/configurator.py
+
+RUN mkdir -p /app/scripts \
+    && python3 generate.py
+
+RUN sed --in-place --expression \
+    '$isource "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+
+CMD [ "/bin/bash" ]

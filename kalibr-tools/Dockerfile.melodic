@@ -1,0 +1,79 @@
+FROM osrf/ros:melodic-desktop
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV WS=/root/catkin_ws
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        build-essential \
+        sudo \
+        apt-utils \
+        software-properties-common \
+ && add-apt-repository ppa:deadsnakes/ppa -y \
+ && apt-get update \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+# Refer to 
+# https://github.com/ethz-asl/kalibr/wiki/installation
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        wget \
+        autoconf \
+        automake \
+        python3-dev \
+        python-pip \
+        python-scipy \
+        python-matplotlib \
+        ipython \
+        python-wxgtk4.0 \
+        python-tk \
+        python-igraph \
+        libeigen3-dev \
+        libboost-all-dev \
+        libsuitesparse-dev \
+        libopencv-dev \
+        libpoco-dev \
+        libtbb-dev \
+        libblas-dev \
+        liblapack-dev \
+        libv4l-dev \
+        libglew-dev\
+        python-catkin-tools \
+    && pip install --upgrade pip \
+    && pip install --no-cache-dir tqdm apriltag transformations dill \
+    && mkdir -p ${WS}/src && cd ${WS} \
+    && git clone https://github.com/castacks/tartancalib.git ${WS}/src/tartancalib \
+    && mkdir -p /app \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+
+WORKDIR ${WS}
+# [experimental] overlay
+COPY ./hacks/IccSensors.py ${WS}/src/tartancalib/aslam_offline_calibration/kalibr/python/kalibr_imu_camera_calibration/IccSensors.py
+
+SHELL ["/bin/bash", "-c"]
+RUN source /opt/ros/melodic/setup.bash \
+    && catkin config --extend /opt/ros/melodic \
+    && catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    && catkin build -j$(nproc)
+
+
+WORKDIR /app
+COPY ./utils /app/utils
+COPY ./configs /app/configs
+COPY extract.py /app/extract.py
+COPY calibrate.py /app/calibrate.py
+COPY generate.py /app/generate.py
+COPY configurator.py /app/configurator.py
+
+RUN mkdir -p /app/scripts \
+    && python generate.py
+
+RUN sed --in-place --expression \
+    '$isource "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+
+CMD [ "/bin/bash" ]
