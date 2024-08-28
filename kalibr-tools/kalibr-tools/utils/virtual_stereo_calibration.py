@@ -123,16 +123,6 @@ EOF""".format(
                 process.kill()
         print("calibrate virtual stereo {} done".format(output_calib_name))
 
-    # calibration_resualt_title = bagname.split(".")[0]
-    # print("calibration_resualt_title", calibration_resualt_title)
-    # results = f"{bagpath}/{calibration_resualt_title}-results-cam.txt"
-    # os.rename(results, f"{bagpath}/{output_calib_name}-results.txt")
-    # results = f"{bagpath}/{calibration_resualt_title}-camchain.yaml"
-    # os.rename(results, f"{bagpath}/{output_calib_name}.yaml")
-    # results = f"{bagpath}/{calibration_resualt_title}-report-cam.pdf"
-    # os.rename(results, f"{bagpath}/{output_calib_name}-report-cam.pdf")
-    # print("Finished calibrate:", output_calib_name)
-
 
 def calibration_task(
     calib_gen, stereo_calib_gens, input_bag_path, height, width, verbose
