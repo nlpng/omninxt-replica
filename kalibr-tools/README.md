@@ -8,6 +8,25 @@ Refactoring the [quarterKalibr](https://github.com/D2SLAM-Fusion/tools-quarterKa
 
 This kalibr-tools is organized in following structure.
 ```shell
+kalibr-tools/
+├── configs
+│   ├── april_6x6.yaml
+│   └── imu.yaml
+├── data
+│   └── keepme.md
+├── Dockerfile.melodic
+├── Dockerfile.noetic
+├── hacks
+│   └── IccSensors.py
+├── kalibr-tools
+│   ├── calibrate.py
+│   ├── extract.py
+│   ├── generate.py
+│   └── utils
+├── README.md
+└── scripts
+    ├── calibrate.sh
+    └── extract.sh
 
 ```
 
@@ -43,7 +62,7 @@ cd omninxt-replica/kalibr-tools
 
 Build the docker container for the calibration tools, they are based on ROS (noetic and melodic) containers. This might take a while to complete. When it is done, you should see the built container using the `docker images` command.
 
-**NOTE** At the moment of writing, the ROS Noetic docker container is not fully tested due to the [know issue](#know_issue).
+**NOTE** At the moment of writing, the ROS Noetic docker container is not fully tested due to the [know issue](#known_issues).
 
 - ROS Noetic
 
@@ -137,10 +156,10 @@ chmod +x ./scripts/calibrate.sh
 ./scripts/calibrate.sh
 ```
 
-Finally if everything went well, all the calibrated parameters and information are saved in the `extracted_output` folder under the  `data` directory.
+Finally if everything went well, all the calibrated parameters and information are saved in the `extracted_output` folder under the `data` directory.
 
 
-<a id="know_issues"></a>
+<a name="known_issues"></a>
 ## Known issues
 Lists of errors occured during the Calibration processes
 
