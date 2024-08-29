@@ -1,5 +1,6 @@
 exclude = [
     "kalibr-tools/hacks/*"
+    "*.ipynb"
 ]
 
 # As Black
