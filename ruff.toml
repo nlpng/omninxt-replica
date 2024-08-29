@@ -1,5 +1,5 @@
 exclude = [
-    "kalibr-tools/hacks/*"
+    "kalibr-tools/hacks/*",
     "*.ipynb"
 ]
 
