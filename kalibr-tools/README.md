@@ -211,3 +211,127 @@ Error occurred while running the script: Command 'CAM_A' returned non-zero exit 
 There is no record about this error, is it just me running into the error somehow. It is caused by the initialize of the `NoMEstimator`, which expect a `double` value, but the `kalibr_imu_camera_calibration` seems provide nothing to the initialization. In the c++ implementation, if nothing is provided, the `NoMEstimator` should be initialized with a default value `1.0`. Anyway by modify the `IccSensors.py` could potentially fix the errors, but no guarantee it is the correct value.
 
 The fixed `IccSensors.py` is provided in the `hacks` folder, which will be later copied into docker for building the kalibr tools.
+
+## Outputs
+
+Despite the correctness of the calibrated parameters, the following files are generated in the `extracted_ouptut` folder at the end.
+
+```
+extracted_output
+├── CAM_A
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_A.bag
+├── CAM_A-CAM_B
+│   ├── intrinsic.yaml
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_A-CAM_B.bag
+├── CAM_A-camchain-imucam.yaml
+├── CAM_A-imu.yaml
+├── CAM_A-report-imucam.pdf
+├── CAM_A-results-imucam.txt
+├── CAM_B
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_B.bag
+├── CAM_B-CAM_C
+│   ├── intrinsic.yaml
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_B-CAM_C.bag
+├── CAM_B-camchain-imucam.yaml
+├── CAM_B-imu.yaml
+├── CAM_B-report-imucam.pdf
+├── CAM_B-results-imucam.txt
+├── CAM_C
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_C.bag
+├── CAM_C-camchain-imucam.yaml
+├── CAM_C-CAM_D
+│   ├── intrinsic.yaml
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_C-CAM_D.bag
+├── CAM_C-imu.yaml
+├── CAM_C-report-imucam.pdf
+├── CAM_C-results-imucam.txt
+├── CAM_D
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_D.bag
+├── CAM_D-CAM_A
+│   ├── intrinsic.yaml
+│   ├── log0-camchain.yaml
+│   ├── log0-results-cam.txt
+│   ├── log1-camchain.yaml
+│   ├── log1-report-cam.pdf
+│   ├── log1-results-cam.txt
+│   └── log.pkl
+├── CAM_D-CAM_A.bag
+├── CAM_D-camchain-imucam.yaml
+├── CAM_D-imu.yaml
+├── CAM_D-report-imucam.pdf
+├── CAM_D-results-imucam.txt
+├── fisheye_cams.yaml
+├── stereo_depth_calibration.bag
+└── virtual_stereo_calibration_180
+    ├── stereo_calib_0_1_240_320-camchain.yaml
+    ├── stereo_calib_0_1_240_320-report-cam.pdf
+    ├── stereo_calib_0_1_240_320-results-cam.txt
+    ├── stereo_calib_0_1_240_320.sh
+    ├── stereo_calib_1_2_240_320-camchain.yaml
+    ├── stereo_calib_1_2_240_320-report-cam.pdf
+    ├── stereo_calib_1_2_240_320-results-cam.txt
+    ├── stereo_calib_1_2_240_320.sh
+    ├── stereo_calib_2_3_240_320-camchain.yaml
+    ├── stereo_calib_2_3_240_320-report-cam.pdf
+    ├── stereo_calib_2_3_240_320-results-cam.txt
+    ├── stereo_calib_2_3_240_320.sh
+    ├── stereo_calib_3_0_240_320-camchain.yaml
+    ├── stereo_calib_3_0_240_320-report-cam.pdf
+    ├── stereo_calib_3_0_240_320-results-cam.txt
+    ├── stereo_calib_3_0_240_320.sh
+    └── stereo_calibration_step_1_width_320_height_240.bag
+
+```
+
+### Captured frames
+By turning on the `verbo` option in the `calibrate_virtual_stereo` method from the `calibrate.py`, the image used to generate `stereo_calibration_step_1_width_320_height_240.bag` file could be observed, as well as the sensor images captured from the OmniNxt quadcam platform, like the following samples.
+
+* Fisheye camera pair A-D with corresponding virtual stereo image
+
+<img src="assets/fisheye_cam_ad.png" width="50%">
+
+* The corresponding virtual stereo images
+
+<img src="assets/virtual_stereo_1_3.png" width="50%">
