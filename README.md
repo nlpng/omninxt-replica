@@ -42,3 +42,23 @@ The cameras on the OmniNxt platform need to be calibrated before using in the de
 
 
 ## D2SLAM
+
+TBA
+
+## Maintenance
+
+The following tools are used to check the source code
+
+### Tools
+* Github Actions
+* pre-commit
+
+### Lint
+* python
+    * [ruff](https://docs.astral.sh/ruff/)
+* cpp
+    * TBA
+
+## Acknowledgment
+
+TBA
