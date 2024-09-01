@@ -50,8 +50,12 @@ TBA
 The following tools are used to check the source code
 
 ### Tools
-* Github Actions
-* pre-commit
+* [Github Actions](https://docs.github.com/ja/actions)
+* [pre-commit](https://pre-commit.com/)
+    * install `pre-commit` to use
+    ```
+    pip install pre-commit
+    ```
 
 ### Lint
 * python
