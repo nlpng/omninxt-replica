@@ -56,6 +56,10 @@ The following tools are used to check the source code
     ```
     pip install pre-commit
     ```
+    * setup pre-commit git hook
+    ```
+    pre-commit install
+    ```
 
 ### Lint
 * python
