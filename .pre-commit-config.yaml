@@ -12,6 +12,6 @@ repos:
       - id: ruff
         name: ruff
         description: "Run 'ruff' for extremely fast Python linting"
-        entry: ruff check --force-exclude
+        entry: ruff check
         language: python
         types_or: [python, pyi]
