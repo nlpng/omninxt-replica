@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import rosbag
 import os
+
+import rosbag
 
 
 def split_image(img, num_subimages=4):

@@ -8,10 +8,11 @@ import cv2 as cv
 import numpy as np
 import rosbag
 import tqdm
+from cv_bridge import CvBridge
+
 import utils.config_loader as config_loader
 import utils.photometric_calibration as photometricCalibration
 from utils.common import split_image
-from cv_bridge import CvBridge
 
 
 # set photometric mask before run this tool

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-import yaml
 import numpy as np
-from utils.stereo_gen import StereoGen
+import yaml
+
 from utils.fisheye_undist import FisheyeUndist
+from utils.stereo_gen import StereoGen
 
 
 def pinholeIntrinsicToCameraMatrix(int):

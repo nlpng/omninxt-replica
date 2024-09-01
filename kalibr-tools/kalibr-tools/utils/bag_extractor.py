@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-import rosbag
-import cv2 as cv
-import tqdm
 import os
+
 import apriltag
+import cv2 as cv
+import rosbag
+import tqdm
+from cv_bridge import CvBridge
+
 import utils.common as common_utils
 import utils.configurator as conf
-from cv_bridge import CvBridge
 
 
 def extract_calibration_bag(bag_path, output_path, image_topic):
