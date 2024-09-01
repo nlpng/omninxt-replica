@@ -22,12 +22,16 @@ The assembled platform is as follow, however during the build there are few part
 * Fisheye lens
     * The specification of the lens model is not provided, but it seems that the fisheye lens FOV needs to be larger than 210 degrees.
     * The [M32076M20](https://www.arducam.com/product/m32076m20-2/) Arducam lens is used, which has 220 degree FOV on 1/4” RPi Camera, however still not sure this is a suitable choice.
-* Camera cable
+* Camera cable.
     * Customized cable is required for better cable management, but could not find suitable maker that could customize the cable.
     * So just used the FCC cables that came with the camera, but the cable management is a mess.
 * Motors
     * Although the `2204 1750KV / 1804 2450KV` motors are the selections, but could not find the specific size and kv rating of motors.
     * End up of using the default [Spinnybois-2006 2150KV](https://oddityrc.com/products/oddityrc-stream-2006-1950kv-high-efficiency-cinematic-motor) motors from Oddity RC, it is default motor that came with the Oddity RC [XI35](https://oddityrc.com/products/xi35pro-walksnail-avatar-pro-version) frame.
+* The quadcam frame
+    * Not sure what material was used for the quadcam frame, which mounts the OAK-FFC-4P and the cameras.
+    * As the shape of the frame is not easy to 3D print with my FDM printer due to amount of supports are required, also hard to CNC with carbon fiber plate.
+    * Simply worried about the structure strength during flight. eventually end up using SLS printing to make the frame.
 * Not shown in the figure
     * [NxtPX4v2](https://micoair.com/flightcontroller_nxtpx4v2/) flight controller is used.
     * [Foxeer Reaper F4 Mini 128K 4in1 BL32 60A](https://www.foxeer.com/foxeer-reaper-f4-mini-128k-4in1-bl32-60a-esc-9-40v-20-20mm-m3-g-419) ESC is used, simply it is the ESC I have in hand at the moment, and still have the defatul BLHeli 32 firmware on board.
