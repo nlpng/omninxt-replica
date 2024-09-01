@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="useCompress"          default="true" />
+    <arg name="enableCal"            default="false"/>
+
+    <!-- Including in another launch file -->
+    <include file="$(find foxglove_bridge)/launch/foxglove_bridge.launch">
+        <arg name="port" value="8765" />
+        <arg name="send_buffer_limit" value="300000000" />
+    </include>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ nodelet below ~~~~~~~~~~~~~~~~~~~ -->
+
+    <node pkg="nodelet" type="nodelet" name="nodelet_manager"  args="manager" output="screen"/>
+
+    <node name="quadcam_publisher" pkg="nodelet" type="nodelet" output="screen" required="true"
+        args="load oak_ffc_4p/QuadcamNodelet nodelet_manager">
+        <param name="useCompress" value="$(arg useCompress)"/>
+        <param name="enableCal" value="$(arg enableCal)"/>
+    </node>
+
+</launch>
