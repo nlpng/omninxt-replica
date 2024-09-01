@@ -6,12 +6,7 @@ repos:
         args: [--style=Google] # Other coding style: LLVM, GNU, Chromium, Microsoft, Mozilla, WebKit.
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.6
+    rev: v0.6.3
     hooks:
       # Run the linter.
       - id: ruff
-        name: ruff
-        description: "Run 'ruff' for extremely fast Python linting"
-        entry: ruff check
-        language: python
-        types_or: [python, pyi]
