@@ -3,3 +3,11 @@
 
 # python
 **/__pycache__/**
+
+# vscode
+.vscode/
+
+# misc
+*.engine
+*.profile
+**/.DS_Store
