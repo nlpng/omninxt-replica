@@ -1,0 +1,164 @@
+FROM nvcr.io/nvidia/l4t-jetpack:r35.4.1
+
+ENV ONNX_VERSION=1.13.1
+ENV CMAKE_VERSION=3.24.1
+ENV OPENCV_VERSION=4.6.0
+ENV ROS_DISTRO=noetic
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        zip \
+        unzip \
+        git \
+        wget \
+        curl \
+        lsb-release \
+        libatlas-base-dev \
+        libeigen3-dev \
+        libgoogle-glog-dev \
+        libsuitesparse-dev \
+        libglib2.0-dev \
+        libgtk2.0-dev \
+        libyaml-cpp-dev \
+        libopenblas-dev \
+        libdw-dev \
+    && sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
+    && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add - \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ros-${ROS_DISTRO}-ros-base \
+        ros-${ROS_DISTRO}-nav-msgs \
+        ros-${ROS_DISTRO}-sensor-msgs \
+        ros-${ROS_DISTRO}-cv-bridge \
+        ros-${ROS_DISTRO}-image-transport-plugins \
+        ros-${ROS_DISTRO}-pcl-ros \
+        ros-${ROS_DISTRO}-catkin \
+        python3-pip \
+        python3-catkin-tools \
+        python3-rosdep \
+        python3-rosinstall \
+        python3-rosinstall-generator \
+        python3-wstool \
+    && rosdep init \
+    && rosdep update \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# CMAKE (replace)
+RUN rm /usr/bin/cmake \
+    && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-aarch64.sh -q -O /tmp/cmake-install.sh \
+    && chmod u+x /tmp/cmake-install.sh \
+    && /tmp/cmake-install.sh --skip-license --prefix=/usr/ \
+    && rm /tmp/cmake-install.sh \
+    && cmake --version
+
+# OpenCV4 with CUDA
+RUN wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -O opencv.zip \
+    && unzip opencv.zip \
+    && rm opencv.zip \
+    && git clone https://github.com/opencv/opencv_contrib.git -b ${OPENCV_VERSION} \
+    && cd opencv-${OPENCV_VERSION} \
+    && mkdir build && cd build \
+    && cmake .. \
+            -D CMAKE_BUILD_TYPE=RELEASE \
+            -D CMAKE_INSTALL_PREFIX=/usr/local \
+            -D WITH_CUDA=ON \
+            -D WITH_CUDNN=ON \
+            -D WITH_CUBLAS=ON \
+            -D CUDA_ARCH_BIN=8.7 \
+            -D CUDA_ARCH_PTX="" \
+            -D CUDA_FAST_MATH=ON \
+            -D WITH_TBB=ON \
+            -D BUILD_opencv_python2=OFF \
+            -D BUILD_opencv_python3=ON \
+            -D OPENCV_DNN_CUDA=ON \
+            -D OPENCV_ENABLE_NONFREE=ON \
+            -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
+            -D BUILD_EXAMPLES=OFF \
+            -D BUILD_opencv_java=OFF \
+            -D BUILD_opencv_python=OFF \
+            -D BUILD_TESTS=OFF \
+            -D BUILD_PERF_TESTS=OFF \
+            -D BUILD_opencv_apps=OFF \
+            -D ENABLE_NEON=ON \
+            -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+	        -D WITH_EIGEN=ON \
+            -D WITH_IPP=OFF \
+      	    -D WITH_OPENCL=OFF \
+            -D BUILD_LIST=calib3d,features2d,highgui,dnn,imgproc,imgcodecs,cudev,cudaoptflow,cudaimgproc,cudalegacy,cudaarithm,cudacodec,cudastereo,cudafeatures2d,xfeatures2d,tracking,stereo,aruco,videoio,ccalib \
+    && make -j$(nproc) \
+    && make install
+
+# Ceres-solver
+RUN git clone https://github.com/HKUST-Swarm/ceres-solver -b D2SLAM \
+    && cd ceres-solver \
+    && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF -DCUDA=OFF .. \
+    && make -j$(nproc) install \
+    && rm -rf ../../ceres-solver \
+    && apt-get clean all
+
+# LCM
+RUN git clone https://github.com/lcm-proj/lcm \
+    && cd lcm \
+    && git checkout tags/v1.4.0 \
+    && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF .. \
+    && make -j$(nproc) install \
+    && rm -rf /lcm
+
+# Faiss
+RUN git clone https://github.com/facebookresearch/faiss.git \
+    && cd faiss \
+    && cmake -B build -DCMAKE_BUILD_TYPE=Release -DFAISS_ENABLE_PYTHON=OFF -DBUILD_TESTING=OFF -DFAISS_ENABLE_GPU=OFF . \
+    && make -C build -j$(nproc) faiss \
+    && make -C build install \
+    && rm -rf ../faiss
+
+# OpenGV
+RUN git clone https://github.com/HKUST-Swarm/opengv \
+    && cd opengv \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && make install \
+    && rm -rf /opengv
+
+# Backward
+RUN wget https://raw.githubusercontent.com/bombela/backward-cpp/master/backward.hpp -O /usr/local/include/backward.hpp
+
+# ONNXRuntime with CUDA and TensorRT
+RUN git clone --recursive https://github.com/Microsoft/onnxruntime \
+    && cd onnxruntime \
+    && git checkout tags/v${ONNX_VERSION} \
+    && ./build.sh --config Release --build_shared_lib --parallel --use_cuda --cudnn_home /usr/ --cuda_home /usr/local/cuda --skip_test --use_tensorrt --tensorrt_home /usr/ \
+    && cd build/Linux/Release \
+    && make install \
+    && rm -rf /onnxruntime
+
+RUN wget https://nvidia.box.com/shared/static/v59xkrnvederwewo2f1jtv6yurl92xso.whl -O onnxruntime_gpu-1.12.1-cp38-cp38-linux_aarch64.whl \
+    && pip3 install onnxruntime_gpu-1.12.1-cp38-cp38-linux_aarch64.whl \
+    && rm onnxruntime_gpu-1.12.1-cp38-cp38-linux_aarch64.whl
+
+# Pytorch
+RUN pip3 install --no-cache https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+84d1cb9.nv22.4-cp38-cp38-linux_aarch64.whl
+
+# spdlog
+RUN wget https://github.com/gabime/spdlog/archive/refs/tags/v1.12.0.tar.gz \
+    && tar -zxvf v1.12.0.tar.gz \
+    && rm v1.12.0.tar.gz \
+    && cd spdlog-1.12.0 \
+    && mkdir build && cd build \
+    && cmake .. && make -j$(nproc) \
+    && make install \
+    && rm -rf /spdlog-1.12.0
+
+COPY ./resources/ros_entrypoint.sh /
+RUN chmod +x /ros_entrypoint.sh
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+
+CMD [ "bash" ]
