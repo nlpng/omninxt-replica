@@ -1,5 +1,7 @@
 FROM d2slam:base-r35.4.1
 
+ARG CONFIG_TYPE=example
+ARG DNN_TYPE=hitnet
 ENV WS=/root/catkin_ws
 
 RUN mkdir -p ${WS}/src \
@@ -31,10 +33,10 @@ RUN export PATH=/usr/local/cuda/bin:$PATH \
     && catkin build -j2
 
 # copy config files
-COPY ./configs ${WS}/src/d2slam/configs
+COPY ./configs/${CONFIG_TYPE} ${WS}/src/d2slam/configs
 
 # copy DNN models
-COPY ./models ${WS}/src/d2slam/nn
+COPY ./models/${DNN_TYPE} ${WS}/src/d2slam/nn
 
 RUN sed --in-place --expression \
     '$isource "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
