@@ -123,6 +123,14 @@ EOF""".format(
                 process.kill()
         print("calibrate virtual stereo {} done".format(output_calib_name))
 
+    # rename calibration file
+    res_camchain = "{}/{}-camchain.yaml".format(bagpath, output_calib_name)
+    if os.path.isfile(res_camchain):
+        os.rename(
+            res_camchain,
+            "{}/{}.yaml".format(bagpath, output_calib_name)
+        )
+
 
 def calibration_task(
     calib_gen, stereo_calib_gens, input_bag_path, height, width, verbose
