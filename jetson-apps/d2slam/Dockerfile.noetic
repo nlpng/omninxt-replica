@@ -1,0 +1,42 @@
+FROM d2slam:base-r35.4.1
+
+ENV WS=/root/catkin_ws
+
+RUN mkdir -p ${WS}/src \
+    && cd ${WS}/src \
+    && git clone https://github.com/HKUST-Swarm/swarm_msgs.git -b D2SLAM \
+    && git clone https://github.com/ros-perception/vision_opencv.git -b ${ROS_DISTRO}
+
+# OMNI-Depth
+# copy D2SLAM (https://github.com/HKUST-Aerial-Robotics/D2SLAM.git)
+COPY ./resources/d2slam/d2frontend ${WS}/src/d2slam/d2frontend
+COPY ./resources/d2slam/d2common ${WS}/src/d2slam/d2common
+COPY ./resources/d2slam/camera_models ${WS}/src/d2slam/camera_models
+COPY ./resources/d2slam/tensorrt_utils ${WS}/src/d2slam/tensorrt_utils
+COPY ./resources/d2slam/quadcam_depth_est ${WS}/src/d2slam/quadcam_depth_est
+
+# OMNI-VINS
+# TODO: add files
+
+WORKDIR ${WS}
+
+RUN export PATH=/usr/local/cuda/bin:$PATH \
+    && export CUDA_HOME=/usr/local/cuda \
+    && . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && catkin config -DCMAKE_BUILD_TYPE=Release \
+        --cmake-args \
+            -DONNXRUNTIME_LIB_DIR=/usr/local/lib/ \
+            -DONNXRUNTIME_INC_DIR=/usr/local/include/onnxruntime/core/session/ \
+            -DTorch_DIR=/usr/local/lib/python3.8/dist-packages/torch/share/cmake/Torch \
+    && catkin build -j2
+
+# copy config files
+COPY ./configs ${WS}/src/d2slam/configs
+
+# copy DNN models
+COPY ./models ${WS}/src/d2slam/nn
+
+RUN sed --in-place --expression \
+    '$isource "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+
+CMD [ "bash" ]
