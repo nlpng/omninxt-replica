@@ -11,7 +11,7 @@ RUN mkdir -p ${WS}/src \
 
 # OMNI-Depth
 # copy D2SLAM (https://github.com/HKUST-Aerial-Robotics/D2SLAM.git)
-COPY ./resources/d2slam/d2frontend ${WS}/src/d2slam/d2frontend
+COPY ./d2frontend ${WS}/src/d2slam/d2frontend
 COPY ./resources/d2slam/d2common ${WS}/src/d2slam/d2common
 COPY ./resources/d2slam/camera_models ${WS}/src/d2slam/camera_models
 COPY ./resources/d2slam/tensorrt_utils ${WS}/src/d2slam/tensorrt_utils
