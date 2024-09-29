@@ -46,7 +46,7 @@ Docker version 25.0.4, build 1a576c5
 
 It is very straight forward to start using the calibration tools. As the original repository described you need to prepare a ROS bag file that contains specific ROS topics. Need to record the rosbag in a specific way base on the OmniNxt quadcam platform, which also described in the origin repository with [video](https://www.youtube.com/watch?v=oh9gTLWwYCM).
 
-- In this example, recorded rosbag that contains following topics 
+- In this example, recorded rosbag that contains following topics
     - image topic (/oak_ffc_4p/assemble_image/compressed)
     - imu topic (/mavros/imu/data_raw)
 
@@ -168,7 +168,7 @@ During the processes of mono or stereo calibration, many rosbags are attempted, 
 
 ```
 Extracting calibration target corners
-  Extracted corners for 683 images (of 1916 images)                              
+  Extracted corners for 683 images (of 1916 images)
 Traceback (most recent call last):
   File "/catkin_ws/devel/lib/kalibr/kalibr_calibrate_cameras", line 15, in <module>
     exec(compile(fh.read(), python_script, 'exec'), context)
@@ -303,6 +303,12 @@ extracted_output
 ├── CAM_D-report-imucam.pdf
 ├── CAM_D-results-imucam.txt
 ├── fisheye_cams.yaml
+├── quadcam_vig_mask
+│   ├── avg23_mask.png
+│   ├── cam_0_vig_mask.png
+│   ├── cam_1_vig_mask.png
+│   ├── cam_2_vig_mask.png
+│   └── cam_3_vig_mask.png
 ├── stereo_depth_calibration.bag
 └── virtual_stereo_calibration_180
     ├── stereo_calib_0_1_240_320-camchain.yaml
