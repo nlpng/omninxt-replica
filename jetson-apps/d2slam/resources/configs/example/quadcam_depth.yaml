@@ -26,9 +26,9 @@ drone_pose_topic: "/d2vins/imu_propagation"
 use_occ_map: true
 
 photometric_calib_numbers: 4
-# TODO: refine this process to make vig calibration more easy to read
-photometric_calib_path: ""
-# photometric_calib: "mask.png"
+# photometric vig mask genereated from kalibr-tool
+# expecting file format to be cam_{}_vig_mask.png
+photometric_calib_path: "/root/catkin_ws/src/d2slam/configs/quadcam_vig_mask"
 photometric_calib: ""
 avg_brightness: 0.7
 stereos:
