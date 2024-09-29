@@ -301,6 +301,11 @@ input_bag = os.path.join("/data", "stereo_depth_calibration.bag")
 output_path = os.path.join(
     "/data", "virtual_stereo_calibration_{}".format(conf.virtual_fov)
 )
+
+photometric_mask_path = None
+if conf.photometric_calibration_folder:
+    photometric_mask_path = os.path.join(
+        "/data", conf.photometric_calibration_folder)
 fisheye_config = os.path.join("/data", "fisheye_cams.yaml")
 step = 1
 vsc.calibrate_virtual_stereo(
@@ -311,6 +316,6 @@ vsc.calibrate_virtual_stereo(
     fisheye_config,
     output_path,
     step,
-    conf.photometric_calibration_path,
+    photometric_mask_path,
     verbose=False,
 )

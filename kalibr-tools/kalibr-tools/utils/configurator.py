@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # photometric calibration
-photometric_calibration_path = None
+photometric_calibration_folder = "quadcam_vig_mask"
 
 # ROS bag topics
 image_topic = "/oak_ffc_4p/assemble_image/compressed"

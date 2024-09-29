@@ -4,6 +4,7 @@ import os
 import utils.bag_extractor as bag_extractor
 import utils.common as common_utils
 import utils.configurator as conf
+import utils.photometric_calibrator as photometric_calibrator
 
 ret = common_utils.check_rosbag(
     conf.image_topic, conf.imu_topic, conf.rosbag_path)
@@ -24,3 +25,14 @@ if not all(list(are_extracted.values())):
         print(bag_file)
 else:
     print("[Bag extractor] Skip extration! bags are already created.")
+
+# Splitted bags are generated at this point
+# prepare photometric mask saving path
+mask_path = os.path.join(conf.output_path, "quadcam_vig_mask")
+if not os.path.exists(mask_path):
+    os.makedirs(mask_path)
+    print("{} created".format(mask_path))
+
+photometric_calibrator.calibPhotometricMask(
+    conf.output_path, mask_path, conf.camera_topics
+)

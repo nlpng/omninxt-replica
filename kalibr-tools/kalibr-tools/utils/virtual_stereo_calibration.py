@@ -11,7 +11,7 @@ import tqdm
 from cv_bridge import CvBridge
 
 import utils.config_loader as config_loader
-import utils.photometric_calibration as photometricCalibration
+import utils.photometric_calibrator as photometricCalibration
 from utils.common import split_image
 
 
