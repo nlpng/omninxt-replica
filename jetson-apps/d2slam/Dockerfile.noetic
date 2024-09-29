@@ -12,10 +12,10 @@ RUN mkdir -p ${WS}/src \
 # OMNI-Depth
 # copy D2SLAM (https://github.com/HKUST-Aerial-Robotics/D2SLAM.git)
 COPY ./d2frontend ${WS}/src/d2slam/d2frontend
-COPY ./resources/d2slam/d2common ${WS}/src/d2slam/d2common
-COPY ./resources/d2slam/camera_models ${WS}/src/d2slam/camera_models
-COPY ./resources/d2slam/tensorrt_utils ${WS}/src/d2slam/tensorrt_utils
-COPY ./resources/d2slam/quadcam_depth_est ${WS}/src/d2slam/quadcam_depth_est
+COPY ./d2slam/d2common ${WS}/src/d2slam/d2common
+COPY ./camera_models ${WS}/src/d2slam/camera_models
+COPY ./tensorrt_utils ${WS}/src/d2slam/tensorrt_utils
+COPY ./quadcam_depth_est ${WS}/src/d2slam/quadcam_depth_est
 
 # OMNI-VINS
 # TODO: add files
@@ -33,10 +33,10 @@ RUN export PATH=/usr/local/cuda/bin:$PATH \
     && catkin build -j2
 
 # copy config files
-COPY ./configs/${CONFIG_TYPE} ${WS}/src/d2slam/configs
+COPY ./resources/configs/${CONFIG_TYPE} ${WS}/src/d2slam/configs
 
 # copy DNN models
-COPY ./models/${DNN_TYPE} ${WS}/src/d2slam/nn
+COPY ./resources/models/${DNN_TYPE} ${WS}/src/d2slam/nn
 
 RUN sed --in-place --expression \
     '$isource "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
