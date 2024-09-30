@@ -69,32 +69,59 @@ class FisheyeUndist:
     def undist(self, img, idx):
         return cv.remap(img, self.maps[idx][0], self.maps[idx][1], cv.INTER_AREA)
 
-# move this outside
-
 
 if __name__ == "__main__":
-    # Test code
+    # Test FisheyeUndist
     import argparse
+
+    import yaml
     parser = argparse.ArgumentParser(description='Fisheye undist')
+    parser.add_argument("-c", "--config", type=str, help="input calib file")
     parser.add_argument("-i", "--input", type=str, help="input image file")
     parser.add_argument("-f", "--fov", type=float, default=190, help="hoizon fov of fisheye")
+    parser.add_argument("--width", type=float, default=320, help="virtual width")
+    parser.add_argument("--height", type=float, default=240, help="virtual height")
+    parser.add_argument("-n", "--cam", type=int, default=0, help="quadcam index")
     args = parser.parse_args()
 
-    K = np.array(
-        [[1162.5434300524314, 0, 660.6393183718625],
-         [0, 1161.839362615319,  386.1663300322095],
-         [0, 0, 1]])
-    D = np.array([-0.17703529535292872, 0.7517933338735744, -0.0008911425891703079, 2.1653595535258756e-05])
-    xi = 2.2176903753419963
+    undists = {}
+    with open(args.config, 'r') as f:
+        config = yaml.safe_load(f)
+        for v in config:
+            print(v)
+            cam_id = int(v[-1])
+            intrinsics = config[v]['intrinsics']
+            distortion_coeffs = config[v]['distortion_coeffs']
+            xi = intrinsics[0]
+            gamma1 = intrinsics[1]
+            gamma2 = intrinsics[2]
+            u0 = intrinsics[3]
+            v0 = intrinsics[4]
+            K = np.array(
+                [[gamma1, 0, u0],
+                 [0, gamma2, v0],
+                 [0, 0, 1]])
+            D = np.array(distortion_coeffs)
 
-    undist = FisheyeUndist(K, D, xi, fov=args.fov)
+            try:
+                T = np.array(config[v]['T_cam_imu'])
+            except Exception as e:
+                T = np.eye(4)
+                print("{} set T to {}".format(e, T))
+
+            undists[cam_id] = FisheyeUndist(
+                K, D, xi, fov=args.fov,
+                width=args.width, height=args.height, extrinsic=T
+            )
+
+    undist = undists[args.cam]
     img = cv.imread(args.input)
     imgs = undist.undistAll(img)
     show = imgs[0]
     for i in range(1, len(imgs)):
         show = cv.hconcat([show, imgs[i]])
-    cv.namedWindow("raw", cv.WINDOW_NORMAL|cv.WINDOW_GUI_EXPANDED)
+    cv.namedWindow("raw", cv.WINDOW_NORMAL | cv.WINDOW_GUI_EXPANDED)
     cv.imshow("raw", img)
-    cv.namedWindow("Undist", cv.WINDOW_NORMAL|cv.WINDOW_GUI_EXPANDED)
+    cv.namedWindow("Undist", cv.WINDOW_NORMAL | cv.WINDOW_GUI_EXPANDED)
     cv.imshow("Undist", show)
     cv.waitKey(0)
